@@ -18,16 +18,27 @@ export default function Home() {
   // 是否在等待回應
   const [isWaiting, setIsWaiting] = useState(false);
 
-  const languageList = ["English", "Japanese", "Korean", "Spanish", "French", "German", "Italian", "Norwegian", "Arabic"];
+  const languageList = [
+    "English",
+    "Japanese",
+    "Korean",
+    "Spanish",
+    "French",
+    "German",
+    "Italian",
+    "Norwegian",
+    "Arabic",
+  ];
 
   // 在頁面載入時取得現有的單字卡資料
   useEffect(() => {
-    axios.get('/api/vocab-ai')
-      .then(response => {
+    axios
+      .get("/api/vocab-ai")
+      .then((response) => {
         console.log("成功取得現有單字卡", response.data);
         setVocabList(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("取得單字卡時發生錯誤", error);
       });
   }, []); // 空陣列代表只在組件掛載時執行一次
@@ -45,31 +56,31 @@ export default function Home() {
     setIsWaiting(true);
     // 清空輸入框
     setUserInput("");
-        
+
     // 透過axios將body POST到 /api/vocab-ai
     // 並使用then以及catch的方式分別印出後端的回應
-    axios.post('/api/vocab-ai', body)
+    axios
+      .post("/api/vocab-ai", body)
       // then代表成功收到後端產生的回應
-      .then(response => {
+      .then((response) => {
         console.log("成功收到後端回應", response.data);
         // 將新的單字卡加入到現有的清單前方
-        setVocabList(prevList => [response.data, ...prevList]);
+        setVocabList((prevList) => [response.data, ...prevList]);
         // 結束等待回應
         setIsWaiting(false);
       })
       // catch代表過程出了問題
-      .catch(error => {
+      .catch((error) => {
         console.error("出了錯誤", error);
         // 結束等待回應
         setIsWaiting(false);
       });
-
-  }
+  };
 
   return (
     <>
       <CurrentFileIndicator filePath="/app/page.js" />
-      <PageHeader title="AI單字聯想生成器" icon={faEarthAmericas} />
+      <PageHeader title="AI VocabTool" icon={faEarthAmericas} />
       <section>
         <div className="container mx-auto">
           <form onSubmit={submitHandler}>
@@ -91,9 +102,11 @@ export default function Home() {
                   onChange={(e) => setLanguage(e.target.value)}
                   required
                 >
-                  {
-                    languageList.map(language => <option key={language} value={language}>{language}</option>)
-                  }
+                  {languageList.map((language) => (
+                    <option key={language} value={language}>
+                      {language}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="w-1/5 px-2">
@@ -107,7 +120,7 @@ export default function Home() {
         <div className="container mx-auto">
           {/* 等待後端回應時要顯示的載入畫面 */}
           {isWaiting ? <VocabGenResultPlaceholder /> : null}
-          
+
           {/* 顯示所有單字卡 */}
           {vocabList.map((result, index) => (
             <VocabGenResultCard
@@ -115,7 +128,6 @@ export default function Home() {
               result={result}
             />
           ))}
-
         </div>
       </section>
     </>
